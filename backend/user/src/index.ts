@@ -1,9 +1,9 @@
 import "dotenv/config";
 import express, { Request, Response } from "express";
-import { redisClient } from "./config/redis.service.js";
+import { redisClient } from "./config/redis.js";
 import { prisma } from "../lib/prisma.js";
 import userRouter from "./routes/user.route.js";
-import { connectRabbitMQ } from "./config/rabbitmq.service.js";
+import { connectRabbitMQ } from "./config/rabbitmq.js";
 
 const app = express();
 
