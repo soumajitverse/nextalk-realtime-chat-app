@@ -163,7 +163,7 @@ export const myProfile = async (req: Request, res: Response) => {
   }
 };
 
-export const updateName = async (req: Request, res: Response) => {
+export const updateProfile = async (req: Request, res: Response) => {
   try {
     const userId = req.user!.id;
     const { name } = req.body;
@@ -181,17 +181,47 @@ export const updateName = async (req: Request, res: Response) => {
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: { name },
-      select:{
-        id:true,
-        name:true,
-        email:true
-      }
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
     });
 
     return res.status(200).json({
       success: true,
       message: "User updated successfully.",
       data: updatedUser,
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
+    });
+
+    if (!users) {
+      return res.status(404).json({
+        success: false,
+        message: "Users not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Fetched all users.",
+      data: users,
     });
   } catch (error: any) {
     return res.status(500).json({
