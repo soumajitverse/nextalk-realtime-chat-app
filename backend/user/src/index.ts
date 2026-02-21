@@ -36,7 +36,7 @@ app.get("/", (req: Request, res: Response) => {
 export async function dbConnect() {
   try {
     await prisma.$connect();
-    console.log("✅ Prisma connected to DB");
+    console.log("✅ Prisma connected to PostgresSql DB");
   } catch (err) {
     console.error("❌ DB connection failed", err);
     process.exit(1); // stop app if DB is not available
