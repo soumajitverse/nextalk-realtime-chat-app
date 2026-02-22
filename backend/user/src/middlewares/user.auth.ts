@@ -1,33 +1,34 @@
 import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
-const isUserAuth = async (req: Request, res: Response, next: NextFunction) => {
+const isAuth = async (req: Request, res: Response, next: NextFunction) => {
   try {
     // console.log("Cookies: ", req.cookies);
+    const authHeader = req.headers.authorization;
 
-    let { token } = req.cookies;
-
-    if (!token) {
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({
         success: false,
         message: "User is not authenticated.",
       });
     }
+    // console.log("authHeader: ", authHeader);
+    const token = authHeader.split(" ")[1];
 
     const JWT_SECRET = process.env.JWT_SECRET as string;
+    console.log("jwt secret: ", JWT_SECRET);
+    const tokenDecoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
 
-    // jwt.verify returns string | JwtPayload, so we explicitly assert the payload shape
-    // to inform TypeScript that this token contains a numeric `id` field
-    const tokenDecoded = jwt.verify(token, JWT_SECRET) as { id: number };
+    // console.log("token decoded: ", tokenDecoded);
 
-    if (tokenDecoded.id) {
-      req.user = { id: tokenDecoded.id };
-    } else {
+    if (!tokenDecoded || !tokenDecoded.user) {
       return res.status(401).json({
         success: false,
         message: "User is not authenticated.",
       });
     }
+
+    req.user = tokenDecoded.user;
     next();
   } catch (error: any) {
     console.error(error);
@@ -38,4 +39,4 @@ const isUserAuth = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export default isUserAuth;
+export default isAuth;

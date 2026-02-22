@@ -7,8 +7,8 @@ if (!JWT_SECRET) {
   throw new Error("JWT_SECRET is not defined in environment variables");
 }
 
-const generateToken = (id: number): string => {
-  const token = jwt.sign({ id }, JWT_SECRET, { expiresIn: "7d" });
+const generateToken = (user: any): string => {
+  const token = jwt.sign({ user }, JWT_SECRET, { expiresIn: "15d" });
   return token;
 };
 
